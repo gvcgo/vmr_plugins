@@ -75,6 +75,8 @@ function crawl()
         if not hasPrefix(versionStr, "go") then
            return 
         end
+
+        versionStr = trimPrefix(versionStr, "go")
         
         local downloadTable = find(ss, "table.downloadtable")
         local tr = find(downloadTable, "tr")
