@@ -4,6 +4,7 @@
 
 -- global variables
 sdk_name = "go"
+plugin_name = "go"
 plugin_version = "0.1"
 prequisite = ""
 homepage = "https://go.dev/"
@@ -38,6 +39,7 @@ function parseOs(osStr)
     return ""
 end
 
+-- called by vmr
 function crawl()
     local url = "https://golang.google.cn/dl/"
     local timeout = 600
@@ -106,7 +108,6 @@ function crawl()
 
                 addItem(versionList, versionStr, item)
             end
-            
         end
 
         each(tr, parseItem)
@@ -114,5 +115,6 @@ function crawl()
 
     each(s1, parseToggle)
     each(s2, parseToggle)
+
     return versionList
 end
