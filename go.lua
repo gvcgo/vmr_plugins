@@ -39,6 +39,19 @@ function parseOs(osStr)
     return ""
 end
 
+--[[
+item{
+    arch
+    os
+    url
+    installer
+    extra
+    sum
+    sum_type
+    size
+    lts
+}
+--]]
 -- called by vmr
 function crawl()
     local url = "https://golang.google.cn/dl/"
