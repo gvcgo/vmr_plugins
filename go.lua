@@ -10,17 +10,17 @@ prequisite = ""
 homepage = "https://go.dev/"
 
 -- installer config
-ic = newInstallerConfig()
-ic = addFlagFiles(ic , "", {"VERSION", "LICENSE"})
-ic = addBinaryDirs(ic, "", {"bin"}) 
-ic = addAdditionalEnvs(ic , "GOROOT", {}, "")
+ic = vmrNewInstallerConfig()
+ic = vmrAddFlagFiles(ic , "", {"VERSION", "LICENSE"})
+ic = vmrAddBinaryDirs(ic, "", {"bin"})
+ic = vmrAddAdditionalEnvs(ic , "GOROOT", {}, "")
 
 -- spider
 function parseArch(archStr)
-    if contains(archStr, "x86-64") then
+    if vmrContains(archStr, "x86-64") then
         return "amd64"
     end
-    if contains(archStr, "ARM64") then
+    if vmrContains(archStr, "ARM64") then
         return "arm64"
     end
     return ""
@@ -52,84 +52,85 @@ item{
     lts
 }
 --]]
+
 -- called by vmr
 function crawl()
     local url = "https://golang.google.cn/dl/"
     local timeout = 600
     local headers = {}
     headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
-    local resp = getResponse(url, timeout, headers)
+    local resp = vmrGetResponse(url, timeout, headers)
 
-    local s1 = initSelection(resp, ".toggle")
-    local s2 = initSelection(resp, ".toggleVisible")
+    local s1 = vmrInitSelection(resp, ".toggle")
+    local s2 = vmrInitSelection(resp, ".toggleVisible")
 
-    local versionList = newVersionList()
+    local versionList = vmrNewVersionList()
 
     function parseToggle(i, ss)
         if not ss then
             return
         end
-        local versionStr = attr(ss, "id")
-        versionStr = trimSpace(versionStr)
+        local versionStr = vmrAttr(ss, "id")
+        versionStr = vmrTrimSpace(versionStr)
 
-        if not hasPrefix(versionStr, "go") then
-           return 
+        if not vmrHasPrefix(versionStr, "go") then
+           return
         end
 
-        versionStr = trimPrefix(versionStr, "go")
-        
-        local downloadTable = find(ss, "table.downloadtable")
-        local tr = find(downloadTable, "tr")
+        versionStr = vmrTrimPrefix(versionStr, "go")
+
+        local downloadTable = vmrFind(ss, "table.downloadtable")
+        local tr = vmrFind(downloadTable, "tr")
 
         function parseItem(i, sss)
-            local tds = find(sss, "td")
+            local tds = vmrFind(sss, "td")
 
-            local eqs = eq(tds, 1)
-            local pkgKind = trimSpace(text(eqs))
+            local eqs = vmrEq(tds, 1)
+            local pkgKind = vmrTrimSpace(vmrText(eqs))
 
-            eqs = eq(tds, 3)
-            local archInfo = parseArch(text(eqs))
+            eqs = vmrEq(tds, 3)
+            local archInfo = parseArch(vmrText(eqs))
 
-            eqs = eq(tds, 2)
-            local osInfo = parseOs(text(eqs))
+            eqs = vmrEq(tds, 2)
+            local osInfo = parseOs(vmrText(eqs))
 
             if pkgKind == "Archive" and archInfo ~= "" and osInfo ~= "" then
-                eqs = eq(tds, 0)
-                local a = find(eqs, "a")
-                local href = attr(a, "href")
+                eqs = vmrEq(tds, 0)
+                local a = vmrFind(eqs, "a")
+                local href = vmrAttr(a, "href")
                 if href == "" then
                     return
                 end
                 local item = {}
                 item["arch"] = archInfo
                 item["os"] = osInfo
-                item["url"] = urlJoin("https://go.dev", href)
+                item["url"] = vmrUrlJoin("https://go.dev", href)
                 item["installer"] = "unarchiver"
-                
-                eqs = eq(tds, 4)
-                item["extra"] = trimSpace(text(eqs))
 
-                eqs = eq(tds, 5)
-                item["sum"] = trimSpace(text(eqs))
+                eqs = vmrEq(tds, 4)
+                item["extra"] = vmrTrimSpace(vmrText(eqs))
 
-                if lenString(item["sum"]) == 64 then
+                eqs = vmrEq(tds, 5)
+                item["sum"] = vmrTrimSpace(vmrText(eqs))
+
+                if vmrLenString(item["sum"]) == 64 then
                     item["sum_type"] = "sha256"
-                elseif lenString(item["sum"]) == 40 then
+                elseif vmrLenString(item["sum"]) == 40 then
                     item["sum_type"] = "sha1"
                 end
 
                 item["size"] = 0
                 item["lts"] = ""
 
-                addItem(versionList, versionStr, item)
+                vmrAddItem(versionList, versionStr, item)
             end
         end
 
-        each(tr, parseItem)
+        vmrEach(tr, parseItem)
     end
 
-    each(s1, parseToggle)
-    each(s2, parseToggle)
+    vmrEach(s1, parseToggle)
+    vmrEach(s2, parseToggle)
 
     return versionList
 end
