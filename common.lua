@@ -1,0 +1,2 @@
+downloadUrlMap = {}
+downloadUrlMap[""] = ""

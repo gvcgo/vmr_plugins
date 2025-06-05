@@ -1,6 +1,8 @@
 {
   "Lua.diagnostics.globals": [
     "vmrGetResponse",
+    "vmrGetProxy",
+    "vmrUnarchive",
     "vmrInitSelection",
     "vmrFind",
     "vmrEq",
@@ -27,6 +29,7 @@
     "vmrSplit",
     "vmrSprintf",
     "vmrUrlJoin",
+    "vmrPathJoin",
     "vmrLenString",
     "vmrGetOsEnv",
     "vmrSetOsEnv",
@@ -35,6 +38,8 @@
     "vmrWriteFile",
     "vmrCopyFile",
     "vmrCopyDir",
+    "vmrCreateDir",
+    "vmrRemoveAll",
     "vmrNewVersionList",
     "vmrAddItem",
     "vmrMergeVersionList",
