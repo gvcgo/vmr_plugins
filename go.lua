@@ -11,9 +11,13 @@ homepage = "https://go.dev/"
 
 -- installer config
 ic = vmrNewInstallerConfig()
-ic = vmrAddFlagFiles(ic , "", {"VERSION", "LICENSE"})
-ic = vmrAddBinaryDirs(ic, "", {"bin"})
-ic = vmrAddAdditionalEnvs(ic , "GOROOT", {}, "")
+ic = vmrAddFlagFiles(ic, "windows", { "VERSION", "LICENSE" })
+ic = vmrAddFlagFiles(ic, "linux", { "VERSION", "LICENSE" })
+ic = vmrAddFlagFiles(ic, "darwin", { "VERSION", "LICENSE" })
+ic = vmrAddBinaryDirs(ic, "windows", { "bin" })
+ic = vmrAddBinaryDirs(ic, "linux", { "bin" })
+ic = vmrAddBinaryDirs(ic, "darwin", { "bin" })
+ic = vmrAddAdditionalEnvs(ic, "GOROOT", {}, "")
 
 -- spider
 function parseArch(archStr)
@@ -58,11 +62,13 @@ function crawl()
     local url = "https://golang.google.cn/dl/"
     local timeout = 600
     local headers = {}
-    headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
+    headers["User-Agent"] =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"
     local resp = vmrGetResponse(url, timeout, headers)
 
     local s1 = vmrInitSelection(resp, ".toggle")
     local s2 = vmrInitSelection(resp, ".toggleVisible")
+    sysOs, sysArch = vmrGetOsArch()
 
     local versionList = vmrNewVersionList()
 
@@ -74,7 +80,7 @@ function crawl()
         versionStr = vmrTrimSpace(versionStr)
 
         if not vmrHasPrefix(versionStr, "go") then
-           return
+            return
         end
 
         versionStr = vmrTrimPrefix(versionStr, "go")
@@ -89,10 +95,14 @@ function crawl()
             local pkgKind = vmrTrimSpace(vmrText(eqs))
 
             eqs = vmrEq(tds, 3)
-            local archInfo = parseArch(vmrText(eqs))
+            local archInfo = vmrTrimSpace(parseArch(vmrText(eqs)))
 
             eqs = vmrEq(tds, 2)
-            local osInfo = parseOs(vmrText(eqs))
+            local osInfo = vmrTrimSpace(parseOs(vmrText(eqs)))
+
+            if archInfo ~= sysArch or osInfo ~= sysOs then
+                return
+            end
 
             if pkgKind == "Archive" and archInfo ~= "" and osInfo ~= "" then
                 eqs = vmrEq(tds, 0)
@@ -133,4 +143,8 @@ function crawl()
     vmrEach(s2, parseToggle)
 
     return versionList
+end
+
+function postInstall(installed_path)
+
 end
