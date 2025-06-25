@@ -1,5 +1,12 @@
 {
   "Lua.diagnostics.globals": [
+    "vmrInstallerConda",
+    "vmrInstallerCoursier",
+    "vmrInstallerRustup",
+    "vmrInstallerUnarchiver",
+    "vmrInstallerExecutable",
+    "vmrInstallerDpkg",
+    "vmrInstallerRpm",
     "vmrGetResponse",
     "vmrGetProxy",
     "vmrUnarchive",

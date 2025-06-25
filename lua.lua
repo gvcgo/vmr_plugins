@@ -6,7 +6,6 @@
 sdk_name = "lua"
 plugin_name = "lua"
 plugin_version = "0.1"
-prequisite = "conda"
 homepage = "https://www.lua.org/"
 
 -- installer config

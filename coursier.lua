@@ -8,7 +8,6 @@
 sdk_name = "coursier"
 plugin_name = "coursier"
 plugin_version = "0.1"
-prequisite = ""
 homepage = "https://get-coursier.io/docs/cli-overview"
 
 -- installer config
@@ -65,7 +64,7 @@ function osParser(str)
 end
 
 function installerGetter(str)
-    return "unarchiver"
+    return vmrInstallerUnarchiver
 end
 
 -- called by vmr

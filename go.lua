@@ -6,7 +6,6 @@
 sdk_name = "go"
 plugin_name = "go"
 plugin_version = "0.1"
-prequisite = ""
 homepage = "https://go.dev/"
 
 -- installer config
@@ -115,7 +114,7 @@ function crawl()
                 item["arch"] = archInfo
                 item["os"] = osInfo
                 item["url"] = vmrUrlJoin("https://go.dev", href)
-                item["installer"] = "unarchiver"
+                item["installer"] = vmrInstallerUnarchiver
 
                 eqs = vmrEq(tds, 4)
                 item["extra"] = vmrTrimSpace(vmrText(eqs))

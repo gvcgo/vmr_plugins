@@ -6,7 +6,6 @@
 sdk_name = "rustup"
 plugin_name = "rustup"
 plugin_version = "0.1"
-prequisite = ""
 homepage = "https://rustup.rs/"
 
 -- installer config
@@ -61,7 +60,7 @@ function crawl()
             item["url"] = url
             item["os"] = os
             item["arch"] = arch
-            item["installer"] = "executable"
+            item["installer"] = vmrInstallerExecutable
             vmrAddItem(versionList, "latest", item)
         end
     end
@@ -69,7 +68,6 @@ function crawl()
     return versionList
 end
 
--- TODO: post install handler
-function postInstall(install_path)
+function install(localFilePath, version)
 
 end

@@ -6,7 +6,6 @@
 sdk_name = "miniconda"
 plugin_name = "miniconda"
 plugin_version = "0.1"
-prequisite = ""
 homepage = "https://www.anaconda.com/docs/getting-started/miniconda/main"
 
 -- installer config
@@ -105,7 +104,7 @@ function crawl()
         item["url"] = vmrUrlJoin(url, href)
         item["os"] = os
         item["arch"] = arch
-        item["installer"] = "executable"
+        item["installer"] = vmrInstallerExecutable
 
         eqs = vmrEq(tds, 3)
         item["sum"] = vmrTrimSpace(vmrText(eqs))
@@ -121,7 +120,6 @@ function crawl()
     return versionList
 end
 
--- TODO: post install handler
-function postInstall(install_path)
+function install(localFilePath, version)
 
 end
