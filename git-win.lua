@@ -32,3 +32,15 @@ function crawl()
         installer = vmrInstallerExecutable,
     })
 end
+
+function install(path, version, item, archive)
+    local os = vmrGetOsArch()
+    if os ~= "windows" then
+        error("Git for Windows can only be installed on Windows")
+    end
+    local _, ok = vmrExecDirect(false, "", { archive, "-y", "-o" .. path })
+    if not ok or not vmrFileExists(vmrPathJoin(path, "cmd/git.exe")) then
+        error("Git for Windows installer failed or did not produce git.exe")
+    end
+    return true
+end

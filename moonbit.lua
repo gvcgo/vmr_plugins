@@ -88,3 +88,43 @@ function crawl()
 
     return vl
 end
+
+function postInstall(path, version, item, archive)
+    assert(item.extra ~= "", "MoonBit core archive URL is missing")
+    local root = vmrCanonicalPath(path)
+    assert(root ~= "", "failed to resolve MoonBit installation path")
+    local bin = vmrPathJoin(root, "bin")
+    local lib = vmrPathJoin(root, "lib")
+    local windows = item.os == "windows"
+    local moon = vmrPathJoin(bin, windows and "moon.exe" or "moon")
+    local moonx = vmrPathJoin(bin, windows and "moonx.exe" or "moonx")
+
+    assert(vmrChmodDirFiles(bin), "failed to make MoonBit binaries executable")
+    local tcc = vmrPathJoin(vmrPathJoin(bin, "internal"), "tcc")
+    if vmrFileExists(tcc) then
+        assert(vmrChmodExecutable(tcc), "failed to make MoonBit tcc executable")
+    end
+    if not vmrFileExists(moonx) then
+        assert(vmrHardLink(moon, moonx), "failed to link moonx")
+    end
+
+    assert(vmrCreateDir(lib), "failed to create MoonBit lib directory")
+    local temp = vmrPathJoin(root, ".vmr-moonbit-core")
+    assert(not vmrFileExists(temp), "MoonBit core temporary directory already exists")
+    assert(vmrCreateDir(temp), "failed to create MoonBit core temporary directory")
+    local core_archive = vmrPathJoin(temp, windows and "core.zip" or "core.tar.gz")
+    assert(vmrDownloadFile(item.extra, core_archive), "failed to download MoonBit core")
+    assert(vmrUnarchive(core_archive, lib, "", false), "failed to extract MoonBit core")
+    assert(vmrRemoveAll(temp), "failed to remove MoonBit core temporary directory")
+
+    local env = {
+        MOON_HOME = root,
+        PATH = bin .. (windows and ";" or ":") .. vmrGetOsEnv("PATH"),
+    }
+    local core = vmrPathJoin(lib, "core")
+    assert(vmrExecSystemCmdEnv(core, { moon, "bundle", "--warn-list", "-a", "--all" }, env),
+        "failed to bundle MoonBit core")
+    assert(vmrExecSystemCmdEnv(core, { moon, "bundle", "--warn-list", "-a", "--target", "wasm-gc", "--quiet" }, env),
+        "failed to bundle MoonBit core for wasm-gc")
+    return true
+end

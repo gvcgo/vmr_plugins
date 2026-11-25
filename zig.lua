@@ -56,3 +56,12 @@ function crawl()
 
     return vl
 end
+
+function postInstall(path, version, item, archive)
+    if item.os ~= "windows" then
+        local executable = vmrFindFile(path, "zig", 3)
+        assert(executable ~= "", "zig executable not found")
+        assert(vmrChmodExecutable(executable), "failed to make zig executable")
+    end
+    return true
+end

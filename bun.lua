@@ -43,3 +43,17 @@ function crawl()
         installer = vmrInstallerUnarchiver,
     })
 end
+
+function postInstall(path, version, item, archive)
+    if item.os == "windows" then
+        return true
+    end
+    local bun = vmrFindFile(path, "bun", 3)
+    assert(bun ~= "", "bun executable not found")
+    assert(vmrChmodExecutable(bun), "failed to make bun executable")
+    local bunx = bun .. "x"
+    if not vmrFileExists(bunx) then
+        assert(vmrSymlink("bun", bunx), "failed to link bunx")
+    end
+    return true
+end

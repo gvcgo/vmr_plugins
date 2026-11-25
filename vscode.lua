@@ -108,3 +108,49 @@ function crawl()
 
     return vl
 end
+
+function install(path, version, item, archive)
+    local os = vmrGetOsArch()
+    local work = vmrTempDir()
+    if work == "" then
+        error("cannot create VS Code temporary directory")
+    end
+    local mounted = false
+    local ok, result = pcall(function()
+        if vmrHasSuffix(archive, ".dmg") then
+            if os ~= "darwin" then
+                error("VS Code disk images require macOS")
+            end
+            local _, attached = vmrExecDirect(false, "", {
+                "hdiutil", "attach", "-nobrowse", "-readonly", "-mountpoint", work, archive,
+            })
+            if not attached then
+                error("cannot mount VS Code disk image")
+            end
+            mounted = true
+        elseif not vmrExtract(archive, work) then
+            error("cannot extract VS Code archive")
+        end
+        local flags = os == "darwin" and { "Contents" } or { "bin", "resources" }
+        local home = vmrFindHome(work, flags, false)
+        if home == "" then
+            error("cannot find VS Code installation in archive")
+        end
+        if not vmrCopyDir(home, path) then
+            error("cannot copy VS Code installation")
+        end
+    end)
+    if mounted then
+        local _, detached = vmrExecDirect(false, "", { "hdiutil", "detach", work })
+        if not detached then
+            error("cannot unmount VS Code disk image at " .. work)
+        end
+    end
+    if not vmrRemoveAll(work) then
+        error("cannot remove VS Code temporary directory: " .. work)
+    end
+    if not ok then
+        error(result)
+    end
+    return true
+end

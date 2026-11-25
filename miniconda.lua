@@ -118,3 +118,20 @@ function crawl()
     vmrEach(tr, parseTr)
     return versionList
 end
+
+function install(path, version, item, archive)
+    local os = vmrGetOsArch()
+    local _, ok
+    if os == "windows" then
+        _, ok = vmrExecDirect(false, "", {
+            archive, "/InstallationType=JustMe", "/RegisterPython=0", "/S",
+        }, "/D=" .. path)
+    else
+        _, ok = vmrExecDirect(false, "", { "sh", archive, "-b", "-f", "-p", path })
+    end
+    local executable = os == "windows" and "Scripts/conda.exe" or "bin/conda"
+    if not ok or not vmrFileExists(vmrPathJoin(path, executable)) then
+        error("Miniconda installer failed or did not produce conda")
+    end
+    return true
+end

@@ -68,6 +68,12 @@ function crawl()
     return versionList
 end
 
-function install(localFilePath, version)
-
+function postInstall(path, version, item, archive)
+    if item.os ~= "windows" then
+        local executable = vmrFindFile(path, "rustup-init", 3)
+        assert(executable ~= "", "rustup-init executable not found")
+        assert(vmrChmodExecutable(executable), "failed to make rustup-init executable")
+    end
+    return true
 end
+
