@@ -19,7 +19,7 @@ function crawl()
     return C.github({
         repo = "vlang/v-analyzer",
         tag_filter = function(tag)
-            if vmrRegexpFindString("v\\d+(\\.\\d+){2}", tag) ~= "" then
+            if vmrRegexpFindString("\\d+(\\.\\d+){2}", tag) ~= "" then
                 return true
             end
             return vmrRegexpFindString("nightly", tag) ~= ""

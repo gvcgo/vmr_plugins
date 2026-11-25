@@ -16,15 +16,21 @@ ic = C.installer({
 })
 
 function crawl()
+    local has_avx2 = vmrHasAvx2 and vmrHasAvx2()
     return C.github({
         repo = "oven-sh/bun",
         tag_regex = "v\\d+(\\.\\d+){2}",
         version_regex = "v\\d+(\\.\\d+){2}",
         version_prefix = "v",
-        exclude = {
-            contains = { "profile", "baseline" },
-            suffix = { ".txt", ".txt.asc" },
-        },
+        file_filter = function(name)
+            if vmrContains(name, "-x64") then
+                if has_avx2 then
+                    return name == "bun-darwin-x64.zip" or name == "bun-linux-x64.zip" or name == "bun-windows-x64.zip"
+                end
+                return name == "bun-darwin-x64-baseline.zip" or name == "bun-linux-x64-baseline.zip" or name == "bun-windows-x64-baseline.zip"
+            end
+            return name == "bun-darwin-aarch64.zip" or name == "bun-linux-aarch64.zip" or name == "bun-windows-aarch64.zip"
+        end,
         os = {
             { "darwin", "darwin" },
             { "linux", "linux" },

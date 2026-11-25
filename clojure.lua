@@ -8,7 +8,7 @@ homepage = "https://clojure.org/"
 
 ic = C.installer({
     flag_files = {
-        windows = { "deps.edn", "example-deps.edn" },
+        windows = { "ClojureTools.psd1", "ClojureTools.psm1" },
         darwin = { "deps.edn", "example-deps.edn" },
         linux = { "deps.edn", "example-deps.edn" },
     },

@@ -69,16 +69,8 @@ function crawl()
                 local url = vmrGetString(asset, "browser_download_url")
                 local size = vmrGetInt(asset, "size")
 
-                if vmrHasSuffix(name, ".exe") then
-                    vmrAddItem(vl, version, {
-                        url = url,
-                        os = "windows",
-                        arch = "amd64",
-                        size = size,
-                        installer = vmrInstallerExecutable,
-                    })
-                elseif vmrHasSuffix(name, ".zip") then
-                    for _, platform in ipairs({ "darwin", "linux" }) do
+                if vmrHasSuffix(name, ".zip") then
+                    for _, platform in ipairs({ "windows", "darwin", "linux" }) do
                         vmrAddItem(vl, version, {
                             url = url,
                             os = platform,

@@ -19,7 +19,7 @@ function crawl()
         version_parser = function(tag)
             return vmrTrimPrefix(tag, "v")
         end,
-        exclude = { suffix = { "-linux-gnu" } },
+        exclude = { suffix = { "-x86_64-unknown-linux-gnu" } },
         os = { { "apple", "darwin" }, { "linux", "linux" }, { "windows", "windows" } },
         arch = { { "-x86_64", "amd64" }, { "-aarch64", "arm64" }, { "-arm64", "arm64" } },
         installer = vmrInstallerExecutable,

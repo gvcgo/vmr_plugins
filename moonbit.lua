@@ -15,11 +15,16 @@ homepage = "https://www.moonbitlang.com/"
 -- installer config
 ic = C.installer({
     flag_files = {
-        windows = { "moon.exe", "moonc.exe" },
-        linux = { "moon", "moonc" },
-        darwin = { "moon", "moonc" },
+        windows = { "bin", "lib", "include" },
+        linux = { "bin", "lib", "include" },
+        darwin = { "bin", "lib", "include" },
     },
-    flag_dir_excepted = true,
+    binary_dirs = {
+        windows = { { "bin" } },
+        linux = { { "bin" } },
+        darwin = { { "bin" } },
+    },
+    additional_envs = { { name = "MOON_HOME", value = {} } },
 })
 
 -- spider
@@ -29,10 +34,11 @@ local CORE_URLS = {
     "https://cli.moonbitlang.com/binaries/%s/moonbit-darwin-x86_64.tar.gz",
     "https://cli.moonbitlang.com/binaries/%s/moonbit-darwin-aarch64.tar.gz",
     "https://cli.moonbitlang.com/binaries/%s/moonbit-linux-x86_64.tar.gz",
+    "https://cli.moonbitlang.com/binaries/%s/moonbit-linux-aarch64.tar.gz",
     "https://cli.moonbitlang.com/binaries/%s/moonbit-windows-x86_64.zip",
 }
 
-local CORE_LIB_URL = "https://cli.moonbitlang.com/cores/core-%s.tar.gz"
+local CORE_LIB_URL = "https://cli.moonbitlang.com/cores/core-%s.%s"
 
 local function parseOs(dUrl)
     if vmrContains(dUrl, "darwin") then
@@ -71,7 +77,7 @@ function crawl()
                 item["os"] = osStr
                 item["arch"] = archStr
                 item["installer"] = vmrInstallerUnarchiver
-                item["extra"] = vmrSprintf(CORE_LIB_URL, { versionStr })
+                item["extra"] = vmrSprintf(CORE_LIB_URL, { versionStr, osStr == "windows" and "zip" or "tar.gz" })
                 item["size"] = 0
                 item["lts"] = ""
 

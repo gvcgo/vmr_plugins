@@ -20,8 +20,6 @@ ic = C.installer({
     },
     additional_envs = {
         { name = "JAVA_HOME", value = {}, version = "" },
-        -- The installer binding stores one DirPath per entry, so the three legacy CLASSPATH
-        -- entries are registered separately (same name/version, one jar each).
         { name = "CLASSPATH", value = { "lib", "dt.jar" }, version = "major<=8" },
         { name = "CLASSPATH", value = { "lib", "tools.jar" }, version = "major<=8" },
         { name = "CLASSPATH", value = { "jre", "lib", "rt.jar" }, version = "major<=8" },

@@ -10,32 +10,28 @@ sdk_name = "vscode"
 plugin_version = "0.1"
 homepage = "https://code.visualstudio.com/"
 
--- installer config: the archive is installed as-is, no extra binary dirs.
-ic = vmrNewInstallerConfig()
+ic = C.installer({
+    flag_files = {
+        windows = { "bin", "resources" },
+        linux = { "bin", "resources" },
+        darwin = { "Contents" },
+    },
+    binary_dirs = {
+        windows = { { "bin" } },
+        linux = { { "bin" } },
+        darwin = { { "Contents", "Resources", "app", "bin" } },
+    },
+})
 
 -- spider
 local DOWNLOAD_URL = "https://code.visualstudio.com/sha?build=stable"
 
 local function fileFilter(dUrl)
-    local excludeList = { "_cli", ".tar.gz", "armhf", "armv7hl" }
-    for _, excludeStr in ipairs(excludeList) do
-        if vmrContains(dUrl, excludeStr) then
-            return false
-        end
+    if vmrContains(dUrl, "_cli") or vmrContains(dUrl, "armhf") or vmrContains(dUrl, "armv7hl") then
+        return false
     end
-    if vmrHasSuffix(dUrl, ".exe") and vmrContains(dUrl, "User") then
-        return true
-    end
-    if vmrHasSuffix(dUrl, ".tar.gz") then
-        return true
-    end
-    if vmrHasSuffix(dUrl, ".zip") and vmrContains(dUrl, "darwin") then
-        return true
-    end
-    if vmrHasSuffix(dUrl, ".deb") or vmrHasSuffix(dUrl, ".rpm") then
-        return true
-    end
-    return false
+    return vmrHasSuffix(dUrl, ".tar.gz") or vmrHasSuffix(dUrl, ".zip")
+        or (vmrContains(dUrl, "darwin") and vmrHasSuffix(dUrl, ".dmg"))
 end
 
 local function parseArch(platformOs)
@@ -67,21 +63,6 @@ local function parseOs(platformOs)
     return ""
 end
 
-local function parseInstaller(dUrl)
-    if vmrHasSuffix(dUrl, ".exe") then
-        return vmrInstallerExecutable
-    end
-    if vmrHasSuffix(dUrl, ".tar.gz") or vmrHasSuffix(dUrl, ".zip") then
-        return vmrInstallerUnarchiver
-    end
-    if vmrHasSuffix(dUrl, ".deb") then
-        return vmrInstallerDpkg
-    end
-    if vmrHasSuffix(dUrl, ".rpm") then
-        return vmrInstallerRpm
-    end
-    return ""
-end
 
 function crawl()
     local vl = vmrNewVersionList()
@@ -118,7 +99,7 @@ function crawl()
         if item["sum"] ~= "" then
             item["sum_type"] = "sha256"
         end
-        item["installer"] = parseInstaller(dUrl)
+        item["installer"] = vmrInstallerUnarchiver
         item["size"] = 0
         item["lts"] = ""
 

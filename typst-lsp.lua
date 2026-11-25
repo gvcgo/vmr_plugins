@@ -23,7 +23,7 @@ function crawl()
         version_regex = "v\\d+(\\.\\d+){2}",
         version_prefix = "v",
         exclude = {
-            suffix = { "linux-gnu", "-linux-gnueabihf", ".toml", ".png", ".md", ".vsix" },
+            suffix = { "-x86_64-unknown-linux-gnu", "-linux-gnueabihf", ".toml", ".png", ".md", ".vsix" },
         },
         os = {
             { "darwin", "darwin" },

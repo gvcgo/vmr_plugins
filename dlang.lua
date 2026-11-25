@@ -27,31 +27,41 @@ local function get_version(vl, vname, vhref)
     local durl = vmrUrlJoin(HOST, vhref)
     local resp = vmrGetResponse(durl, 180, {})
 
+    local assets = {}
     vmrEach(vmrInitSelection(resp, "div#content li a"), function(_, anchor)
         local href = vmrAttr(anchor, "href")
-        local url, arch, os_name = "", "", ""
+        local os_name, priority = "", 0
         if vmrHasSuffix(href, ".windows.zip") then
-            url, arch, os_name = vmrUrlJoin(HOST, href), "amd64", "windows"
+            os_name, priority = "windows", 2
+        elseif vmrHasSuffix(href, ".windows.7z") then
+            os_name, priority = "windows", 1
         elseif vmrHasSuffix(href, ".osx.zip") then
-            url, arch, os_name = vmrUrlJoin(HOST, href), "amd64", "darwin"
+            os_name, priority = "darwin", 2
+        elseif vmrHasSuffix(href, ".osx.tar.xz") then
+            os_name, priority = "darwin", 1
         elseif vmrHasSuffix(href, ".linux.zip") then
-            url, arch, os_name = vmrUrlJoin(HOST, href), "amd64", "linux"
+            os_name, priority = "linux", 2
+        elseif vmrHasSuffix(href, ".linux.tar.xz") then
+            os_name, priority = "linux", 1
         end
-
-        if url ~= "" then
-            vmrAddItem(vl, vname, {
-                url = url,
-                arch = arch,
-                os = os_name,
-                sum = "",
-                sum_type = "",
-                size = 0,
-                installer = vmrInstallerUnarchiver,
-                lts = "",
-                extra = "",
-            })
+        if os_name ~= "" and (not assets[os_name] or priority > assets[os_name].priority) then
+            assets[os_name] = { url = vmrUrlJoin(HOST, href), priority = priority }
         end
     end)
+
+    for os_name, asset in pairs(assets) do
+        vmrAddItem(vl, vname, {
+            url = asset.url,
+            arch = "amd64",
+            os = os_name,
+            sum = "",
+            sum_type = "",
+            size = 0,
+            installer = vmrInstallerUnarchiver,
+            lts = "",
+            extra = "",
+        })
+    end
 end
 
 function crawl()

@@ -18,7 +18,7 @@ ic = vmrAddFlagFiles(ic, "darwin", { "cs" })
 ic = vmrEnableFlagDirExcepted(ic)
 
 --spider
-local rePattern = "v(\\d+)(.\\d+){2}"
+local rePattern = "^v(\\d+)(\\.\\d+){2}(-[0-9A-Za-z][0-9A-Za-z.-]*)?$"
 function tagFilter(str)
     local s = vmrRegexpFindString(rePattern, str)
     if s ~= "" then

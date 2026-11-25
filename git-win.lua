@@ -22,11 +22,13 @@ function crawl()
         version_parser = function(tag)
             return vmrTrimPrefix(tag, "v")
         end,
-        include = { prefix = { "PortableGit-" } },
+        file_filter = function(name)
+            return vmrHasPrefix(name, "PortableGit-") and vmrHasSuffix(name, ".7z.exe")
+        end,
         os_parser = function()
             return "windows"
         end,
-        arch = { { "-64-bit", "amd64" } },
-        installer = vmrInstallerUnarchiver,
+        arch = { { "-64-bit", "amd64" }, { "-arm64", "arm64" } },
+        installer = vmrInstallerExecutable,
     })
 end

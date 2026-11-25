@@ -26,7 +26,7 @@ local function file_filter(name)
     if vmrContains(name, "-msvcrt-ubuntu") then
         return false
     end
-    if vmrContains(name, "-ucrt-") and not vmrContains(name, "ubuntu") and not vmrContains(name, "macos") then
+    if vmrContains(name, "-ucrt-") and not vmrContains(name, "ubuntu") and not vmrContains(name, "macos") and not vmrContains(name, "-aarch64") then
         return false
     end
     return true

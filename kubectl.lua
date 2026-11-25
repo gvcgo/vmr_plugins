@@ -29,6 +29,7 @@ local ARCH_OS_LIST = {
     { "linux", "amd64" },
     { "linux", "arm64" },
     { "windows", "amd64" },
+    { "windows", "arm64" },
 }
 
 local function response_text(resp)

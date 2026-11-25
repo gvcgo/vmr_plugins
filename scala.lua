@@ -37,10 +37,16 @@ local function crawl_scala3()
             return tag
         end,
         file_filter = function(name)
-            return vmrHasSuffix(name, ".tar.gz") or vmrHasSuffix(name, ".zip")
+            if vmrContains(name, "-pc-win32") then
+                return vmrHasSuffix(name, ".zip")
+            end
+            if vmrContains(name, "-apple-darwin") or vmrContains(name, "-pc-linux") then
+                return vmrHasSuffix(name, ".tar.gz")
+            end
+            return vmrRegexpFindString("^scala3-[0-9]+\\.[0-9]+\\.[0-9]+\\.(tar\\.gz|zip)$", name) ~= ""
         end,
         os_parser = function(name)
-            if vmrContains(name, "windows") then
+            if vmrContains(name, "-pc-win32") then
                 return "windows"
             end
             if vmrContains(name, "apple-darwin") then
