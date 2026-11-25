@@ -39,8 +39,7 @@ function crawl()
                 return "amd64"
             end
             if vmrContains(name, "arm64") then
-                -- upstream vcollector returns the literal "amr64" here; kept for parity.
-                return "amr64"
+                return "arm64"
             end
             return ""
         end,
