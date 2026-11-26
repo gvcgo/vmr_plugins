@@ -24,3 +24,12 @@ function crawl()
         installer = vmrInstallerUnarchiver,
     })
 end
+
+function postInstall(path, version, item, archive)
+    if item.os ~= "windows" then
+        local executable = vmrFindFile(path, "upx", 3)
+        assert(executable ~= "", "upx executable not found")
+        assert(vmrChmodExecutable(executable), "failed to make upx executable")
+    end
+    return true
+end

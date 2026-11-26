@@ -22,7 +22,7 @@ function crawl()
         version_parser = function(tag)
             return vmrTrimPrefix(tag, "v")
         end,
-        exclude = { suffix = { ".deb", "-linux-musl.tar.gz", "-windows-msvc.zip" } },
+        exclude = { suffix = { ".deb", "-linux-musl.tar.gz", "-x86_64-pc-windows-msvc.zip" } },
         os = { { "darwin", "darwin" }, { "linux", "linux" }, { "windows", "windows" } },
         arch = { { "-x86_64", "amd64" }, { "-aarch64", "arm64" } },
         installer = vmrInstallerUnarchiver,

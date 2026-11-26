@@ -23,7 +23,7 @@ function crawl()
         version_prefix = "v",
         exclude = {
             contains = { "-browser" },
-            suffix = { ".sha256", ".sha512" },
+            suffix = { ".sha256", ".sha512", ".sigstore" },
         },
         os = {
             { "darwin", "darwin" },

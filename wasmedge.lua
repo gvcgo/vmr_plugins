@@ -20,8 +20,8 @@ function crawl()
         end,
         exclude = {
             prefix = { "sbom" },
-            contains = { "-manylinux2014", "-manylinux2010", "-msvc", "-plugin-", "-runtime-only-" },
-            suffix = { "static.tar.gz", ".exe", ".rpm", ".tar.xz", ".src.tar.gz", ".msi" },
+            contains = { "-manylinux1_", "-manylinux2010", "-msvc", "-plugin-", "-runtime-only-" },
+            suffix = { "static.tar.gz", ".exe", ".rpm", ".tar.xz", ".tar.bz2", ".tar.zst", ".src.tar.gz", ".msi" },
         },
         os = { { "darwin", "darwin" }, { "linux", "linux" }, { "windows", "windows" } },
         arch = {

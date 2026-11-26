@@ -19,11 +19,14 @@ ic = C.installer({
 function crawl()
     return C.github({
         repo = "Enter-tainer/typst-preview",
-        tag_regex = "v\\d+(\\.\\d+){2}",
+        tag_regex = "^v\\d+(\\.\\d+){2}$",
         version_parser = function(tag)
             return vmrTrimPrefix(tag, "v")
         end,
-        exclude = { suffix = { ".dwarf", ".debug", ".vsix", ".html", ".pdb" } },
+        file_filter = function(name)
+            return vmrRegexpFindString("^typst-preview-(darwin|linux)-(x64|arm64)$", name) ~= ""
+                or vmrRegexpFindString("^typst-preview-win32-(x64|arm64)\\.exe$", name) ~= ""
+        end,
         os = { { "darwin", "darwin" }, { "linux", "linux" }, { "-win32", "windows" } },
         arch = { { "-x64", "amd64" }, { "-arm64", "arm64" } },
         installer = vmrInstallerExecutable,

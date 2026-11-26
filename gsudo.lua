@@ -23,7 +23,7 @@ function crawl()
             return "windows"
         end,
         arch_parser = function()
-            return "amd64"
+            return "any"
         end,
         installer = vmrInstallerUnarchiver,
     })

@@ -18,8 +18,8 @@ ic = C.installer({
 function crawl()
     return C.github({
         repo = "Pure-D/serve-d",
-        tag_regex = "v\\d+(\\.\\d+){2}",
-        version_regex = "v\\d+(\\.\\d+){2}",
+        tag_regex = "^v\\d+(\\.\\d+){2}(-[0-9A-Za-z][0-9A-Za-z.-]*)?$",
+        version_regex = "^v\\d+(\\.\\d+){2}(-[0-9A-Za-z][0-9A-Za-z.-]*)?$",
         version_prefix = "v",
         exclude = {
             suffix = { ".tar.xz", "-x86.zip" },

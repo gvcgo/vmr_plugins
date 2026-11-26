@@ -88,7 +88,13 @@ function crawl()
 
         local item = {}
         item["url"] = vmrUrlJoin(HOST, fName)
-        item["arch"] = "any"
+        if vmrContains(fName, "mac_x86_64") then
+            item["arch"] = "amd64"
+        elseif vmrContains(fName, "mac_arm64") then
+            item["arch"] = "arm64"
+        else
+            item["arch"] = "any"
+        end
         item["os"] = parseOs(platform)
         item["sum"] = sum
         if sum ~= "" then

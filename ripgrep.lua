@@ -17,7 +17,7 @@ function crawl()
         version_regex = "\\d+(\\.\\d+){2}",
         exclude = {
             contains = { "archive/refs/" },
-            suffix = { "-windows-msvc.zip", ".sha256", ".deb" },
+            suffix = { "-x86_64-pc-windows-msvc.zip", ".sha256", ".deb" },
         },
         os = { { "darwin", "darwin" }, { "linux", "linux" }, { "windows", "windows" } },
         arch = { { "-x86_64", "amd64" }, { "-aarch64", "arm64" } },

@@ -27,7 +27,7 @@ local function response_text(resp)
 end
 
 local function get_sha(sha_url)
-    return response_text(vmrGetResponse(sha_url, 120, {}))
+    return vmrTrimSpace(response_text(vmrGetResponse(sha_url, 120, {})))
 end
 
 local function get_versions(vl, durl)
@@ -45,6 +45,10 @@ local function get_versions(vl, durl)
 
         local vurl = vmrUrlJoin(vmrUrlJoin(durl, href), "/binaries/")
         local doc = vmrGetResponse(vurl, 180, {})
+        local checksums = {}
+        vmrEach(vmrInitSelection(doc, "a"), function(_, anchor)
+            checksums[vmrText(anchor)] = true
+        end)
         vmrEach(vmrInitSelection(doc, "a"), function(_, bin)
             local name = vmrText(bin)
             if not vmrHasSuffix(name, "bin.tar.gz") then
@@ -57,16 +61,26 @@ local function get_versions(vl, durl)
             end
 
             local tar_url = vmrUrlJoin(vurl, bin_href)
-            local sum_type = "sha1"
-            if vmrContains(durl, "/maven-4/") then
+            local sum_type = ""
+            if checksums[name .. ".sha512"] then
                 sum_type = "sha512"
+            elseif checksums[name .. ".sha1"] then
+                sum_type = "sha1"
+            end
+            local sum = ""
+            if sum_type ~= "" then
+                sum = get_sha(tar_url .. "." .. sum_type):match("^%x+") or ""
+                local expected_length = sum_type == "sha512" and 128 or 40
+                if #sum ~= expected_length then
+                    error("Invalid Maven checksum: " .. tar_url)
+                end
             end
 
             vmrAddItem(vl, vmrTrim(text, "/"), {
                 url = tar_url,
                 arch = "any",
                 os = "any",
-                sum = get_sha(tar_url .. "." .. sum_type),
+                sum = sum,
                 sum_type = sum_type,
                 size = 0,
                 installer = vmrInstallerUnarchiver,

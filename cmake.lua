@@ -22,9 +22,10 @@ function crawl()
             contains = { "macos10.10-" },
             suffix = { ".json", ".sh", ".dmg", ".txt", ".asc", ".msi" },
         },
-        os = { { "macos", "darwin" }, { "linux", "linux" }, { "windows", "windows" } },
+        os = { { "macos", "darwin" }, { "Darwin", "darwin" }, { "linux", "linux" }, { "Linux", "linux" }, { "windows", "windows" }, { "win64", "windows" } },
         arch = {
             { "-x86_64", "amd64" },
+            { "-x64", "amd64" },
             { "-aarch64", "arm64" },
             { "-arm64", "arm64" },
             { "-universal", "any" },

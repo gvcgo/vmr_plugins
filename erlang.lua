@@ -31,7 +31,7 @@ local function versionParser(tag)
 end
 
 local function fileFilter(name)
-    return vmrHasSuffix(name, ".exe") and vmrContains(name, "win64")
+    return vmrHasSuffix(name, ".zip") and vmrContains(name, "win64")
 end
 
 local function osParser(_)
@@ -50,7 +50,7 @@ function crawl()
         file_filter = fileFilter,
         os_parser = osParser,
         arch_parser = archParser,
-        installer = vmrInstallerExecutable,
+        installer = vmrInstallerUnarchiver,
     })
     return vmrMergeVersionList(vl, gh)
 end

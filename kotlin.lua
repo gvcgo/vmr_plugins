@@ -25,17 +25,12 @@ ic = C.installer({
 })
 
 local function file_filter(name)
-    if vmrHasPrefix(name, "maven-") then
-        return false
-    end
-    if vmrHasSuffix(name, ".sha256") or vmrHasSuffix(name, ".json") then
-        return false
-    end
-    return true
+    return (vmrHasPrefix(name, "kotlin-native-") or vmrHasPrefix(name, "kotlin-compiler-graalvm-native-image-"))
+        and (vmrHasSuffix(name, ".tar.gz") or vmrHasSuffix(name, ".zip"))
 end
 
 local function tag_version(tag)
-    local v = vmrRegexpFindString("v\\d+(\\.\\d+){2}", tag)
+    local v = vmrRegexpFindString("^v\\d+(\\.\\d+){2}(-[0-9A-Za-z][0-9A-Za-z.-]*)?$", tag)
     if v == "" then
         return ""
     end
@@ -45,7 +40,7 @@ end
 function crawl()
     local native = C.github({
         repo = "JetBrains/kotlin",
-        tag_regex = "v\\d+(\\.\\d+){2}",
+        tag_regex = "^v\\d+(\\.\\d+){2}(-[0-9A-Za-z][0-9A-Za-z.-]*)?$",
         version_parser = function(tag)
             local v = tag_version(tag)
             if v == "" then
@@ -68,9 +63,11 @@ function crawl()
 
     local compiler = C.github({
         repo = "JetBrains/kotlin",
-        tag_regex = "v\\d+(\\.\\d+){2}",
+        tag_regex = "^v\\d+(\\.\\d+){2}(-[0-9A-Za-z][0-9A-Za-z.-]*)?$",
         version_parser = tag_version,
-        file_filter = file_filter,
+        file_filter = function(name)
+            return vmrRegexpFindString("^kotlin-compiler-[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z][0-9A-Za-z.-]*)?\\.zip$", name) ~= ""
+        end,
         os_parser = function(name)
             if vmrContains(name, "kotlin-compiler-") then
                 return "any"

@@ -143,7 +143,3 @@ function crawl()
 
     return versionList
 end
-
-function postInstall(installed_path)
-
-end

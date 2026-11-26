@@ -26,21 +26,18 @@ local DIST_URL = "https://services.gradle.org/distributions/gradle-%s-all.zip"
 function crawl()
     local vl = vmrNewVersionList()
     local resp = vmrGetResponse(DOWNLOAD_URL, 300, {})
-    local headings = vmrInitSelection(resp, "h3.u-text-with-icon")
-    -- The checksum list is the next sibling <ul> of each heading; both document-level lists keep
-    -- the same order, so heading i pairs with list i.
-    local lists = vmrInitSelection(resp, "h3.u-text-with-icon + ul")
-
-    vmrEach(headings, function(index, heading)
-        local vstr = vmrTrimSpace(vmrText(vmrEq(vmrFind(heading, "span"), 1)))
-        -- Upstream used to publish "vX.Y.Z"; the checksum page now lists the bare version.
-        if vmrHasPrefix(vstr, "v") then
-            vstr = vmrTrimPrefix(vstr, "v")
-        end
+    vmrEach(vmrInitSelection(resp, "div.checksum-row"), function(_, row)
+        local vstr = vmrTrimSpace(vmrAttr(row, "data-version"))
         if vstr ~= "" and vstr ~= "0.7" then
-            local checksum = vmrTrimSpace(
-                vmrText(vmrFind(vmrEq(vmrFind(vmrEq(lists, index), "li"), 1), "code"))
-            )
+            local checksum = ""
+            vmrEach(vmrFind(row, "dl.checksum-row__hashes div"), function(_, entry)
+                if vmrContains(vmrText(vmrFind(entry, "dt")), "Complete (-all)") then
+                    checksum = vmrTrimSpace(vmrText(vmrFind(entry, "dd code")))
+                end
+            end)
+            if checksum == "" then
+                return
+            end
             vmrAddItem(vl, vstr, {
                 url = vmrSprintf(DIST_URL, { vstr }),
                 arch = "any",

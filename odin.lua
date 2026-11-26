@@ -29,6 +29,7 @@ function crawl()
         os = {
             { "macos", "darwin" },
             { "ubuntu", "linux" },
+            { "linux", "linux" },
             { "windows", "windows" },
         },
         arch = {

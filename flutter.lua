@@ -37,7 +37,11 @@ function crawl()
         local base = vmrGetString(root, "base_url")
 
         vmrSliceEach(root, "releases", function(_, release)
-            local arch = ARCH_MAP[vmrGetString(release, "dart_sdk_arch")]
+            local source_arch = vmrGetString(release, "dart_sdk_arch")
+            local arch = ARCH_MAP[source_arch]
+            if source_arch == "" then
+                arch = "amd64"
+            end
             if arch then
                 local sum = vmrGetString(release, "sha256")
                 vmrAddItem(vl, vmrGetString(release, "version"), {

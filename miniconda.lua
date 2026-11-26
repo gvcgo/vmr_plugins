@@ -10,7 +10,9 @@ homepage = "https://www.anaconda.com/docs/getting-started/miniconda/main"
 
 -- installer config
 ic = vmrNewInstallerConfig()
-ic = vmrAddBinaryDirs(ic, "windows", { "bin" })
+ic = vmrAddBinaryDirs(ic, "windows", {})
+ic = vmrAddBinaryDirs(ic, "windows", { "Scripts" })
+ic = vmrAddBinaryDirs(ic, "windows", { "Library", "bin" })
 ic = vmrAddBinaryDirs(ic, "windows", { "condabin" })
 ic = vmrAddBinaryDirs(ic, "linux", { "bin" })
 ic = vmrAddBinaryDirs(ic, "linux", { "condabin" })
@@ -53,10 +55,7 @@ function parseVersionFromName(verName)
 end
 
 function filterByHref(h)
-    if vmrHasSuffix(h, ".pkg") then
-        return false
-    end
-    return true
+    return vmrHasSuffix(h, ".sh") or vmrHasSuffix(h, ".exe")
 end
 
 function crawl()
@@ -120,6 +119,19 @@ function crawl()
     return versionList
 end
 
-function install(localFilePath, version)
-
+function install(path, version, item, archive)
+    local os = vmrGetOsArch()
+    local _, ok
+    if os == "windows" then
+        _, ok = vmrExecDirect(false, "", {
+            archive, "/InstallationType=JustMe", "/RegisterPython=0", "/S",
+        }, "/D=" .. path)
+    else
+        _, ok = vmrExecDirect(false, "", { "sh", archive, "-b", "-f", "-p", path })
+    end
+    local executable = os == "windows" and "Scripts/conda.exe" or "bin/conda"
+    if not ok or not vmrFileExists(vmrPathJoin(path, executable)) then
+        error("Miniconda installer failed or did not produce conda")
+    end
+    return true
 end
