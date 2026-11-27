@@ -23,7 +23,7 @@ function crawl()
     return C.github({
         repo = "vlang/v",
         tag_filter = function(tag)
-            if vmrRegexpFindString("\\d+(\\.\\d+){2}", tag) ~= "" then
+            if vmrRegexpFindString("^v?\\d+\\.\\d+(\\.\\d+)?$", tag) ~= "" then
                 return true
             end
             return vmrHasPrefix(tag, "weekly.")
